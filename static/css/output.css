@@ -704,6 +704,10 @@ video {
   margin-top: 0.25rem;
 }
 
+.mt-10{
+  margin-top: 2.5rem;
+}
+
 .mt-12{
   margin-top: 3rem;
 }
@@ -726,10 +730,6 @@ video {
 
 .mt-6{
   margin-top: 1.5rem;
-}
-
-.mt-8{
-  margin-top: 2rem;
 }
 
 .block{
@@ -826,6 +826,14 @@ video {
 
 .cursor-not-allowed{
   cursor: not-allowed;
+}
+
+.list-inside{
+  list-style-position: inside;
+}
+
+.list-disc{
+  list-style-type: disc;
 }
 
 .grid-cols-1{
@@ -1263,6 +1271,11 @@ video {
   color: rgb(0 153 64 / var(--tw-text-opacity, 1));
 }
 
+.text-green-700{
+  --tw-text-opacity: 1;
+  color: rgb(0 102 38 / var(--tw-text-opacity, 1));
+}
+
 .text-green-800{
   --tw-text-opacity: 1;
   color: rgb(0 51 19 / var(--tw-text-opacity, 1));
@@ -1276,6 +1289,11 @@ video {
 .text-red-600{
   --tw-text-opacity: 1;
   color: rgb(204 0 0 / var(--tw-text-opacity, 1));
+}
+
+.text-red-700{
+  --tw-text-opacity: 1;
+  color: rgb(153 0 0 / var(--tw-text-opacity, 1));
 }
 
 .text-red-800{
@@ -1687,6 +1705,11 @@ html, body {
   color: rgb(153 255 204 / var(--tw-text-opacity, 1));
 }
 
+.dark\:text-green-300:is(.dark *){
+  --tw-text-opacity: 1;
+  color: rgb(102 255 179 / var(--tw-text-opacity, 1));
+}
+
 .dark\:text-green-400:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(51 255 153 / var(--tw-text-opacity, 1));
@@ -1700,6 +1723,11 @@ html, body {
 .dark\:text-red-200:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(255 153 153 / var(--tw-text-opacity, 1));
+}
+
+.dark\:text-red-300:is(.dark *){
+  --tw-text-opacity: 1;
+  color: rgb(255 102 102 / var(--tw-text-opacity, 1));
 }
 
 .dark\:text-red-400:is(.dark *){

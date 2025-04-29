@@ -3,38 +3,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Theme toggle functionality
     const themeToggleBtn = document.getElementById('theme-toggle');
     
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', function() {
-            document.documentElement.classList.toggle('dark');
-            
-            // Save the preference
-            if (document.documentElement.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-        });
+    if (localStorage.getItem('theme') === 'dark') {
+        html.classList.add('dark');
     }
     
-    // Check for saved theme preference
-    if (localStorage.theme === 'dark' || 
-        (!('theme' in localStorage) && 
-         window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-    
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-    
+    toggle.addEventListener('click', () => {
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      });
+      
+      // Mobile menu toggle
+      document.getElementById('mobile-menu-button').addEventListener('click', () => {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+      });
     // Flash message auto-dismiss
     const flashMessages = document.querySelectorAll('.flash-message');
     

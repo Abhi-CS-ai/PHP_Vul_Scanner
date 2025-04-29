@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PHP Vulnerability Scanner - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Correct Tailwind CSS build output -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}" />
+
+    <!-- Favicon & SEO -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="description" content="Scan PHP files or URLs for vulnerabilities using a simple web tool." />
+
+    <!-- Icons & JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200">
+    <!-- Header / Navbar -->
     <header class="bg-white dark:bg-gray-800 shadow">
         <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
                 <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">PHP</span>
                 <span class="text-2xl font-bold">Vulnerability Scanner</span>
             </a>
-            
+
             <div class="flex items-center space-x-4">
                 <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-moon hidden dark:block"></i>
                     <i class="fas fa-sun block dark:hidden"></i>
                 </button>
-                
+
                 {% if current_user.is_authenticated %}
                 <div class="hidden md:flex space-x-4">
                     <a href="{{ url_for('dashboard') }}" class="py-2 px-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Dashboard</a>
                     <a href="{{ url_for('scan') }}" class="py-2 px-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">New Scan</a>
                     <a href="{{ url_for('history') }}" class="py-2 px-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">History</a>
                 </div>
-                
+
                 <div class="relative group">
                     <button class="flex items-center space-x-1 py-2 px-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                         <span>{{ current_user.username }}</span>
@@ -46,13 +55,13 @@
                     <a href="{{ url_for('register') }}" class="py-2 px-4 rounded border border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Register</a>
                 </div>
                 {% endif %}
-                
+
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
         </nav>
-        
+
         <!-- Mobile menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-800 pb-3">
             <div class="container mx-auto px-4 space-y-2">
@@ -64,7 +73,8 @@
             </div>
         </div>
     </header>
-    
+
+    <!-- Main content block -->
     <main class="container mx-auto px-4 py-8">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -78,10 +88,11 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
+
         {% block content %}{% endblock %}
     </main>
-    
+
+    <!-- Footer -->
     <footer class="bg-white dark:bg-gray-800 py-6 mt-12">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; 2025 PHP Vulnerability Scanner. All rights reserved.</p>

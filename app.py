@@ -49,21 +49,34 @@ def register():
         return redirect(url_for('dashboard'))
     
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+
+        # Validate input
+        if not username or not email or not password:
+            flash('All fields are required.', 'error')
+            return redirect(url_for('register'))
+
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'error')
+            return redirect(url_for('register'))
+
         # Check if user already exists
         user = User.query.filter_by(email=email).first()
         if user:
             flash('Email already registered.', 'error')
             return redirect(url_for('register'))
-        
+
         # Create new user
-        new_user = User(username=username, email=email, password=generate_password_hash(password, method='pbkdf2:sha256'))
+        new_user = User(
+            username=username,
+            email=email,
+            password=generate_password_hash(password, method='pbkdf2:sha256')
+        )
         db.session.add(new_user)
         db.session.commit()
-        
+
         flash('Registration successful! Please login.', 'success')
         return redirect(url_for('login'))
     
