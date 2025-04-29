@@ -14,13 +14,19 @@ from models.scan_result import ScanResult
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key-for-development')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/scan_results.db'
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'database', 'scan_results.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-# Ensure upload directory exists
+# Ensure database and upload directories exist
+os.makedirs(os.path.join(basedir, 'database'), exist_ok=True)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+print("DB Path:", db_path)
 
 # Initialize extensions
 db.init_app(app)
@@ -192,8 +198,7 @@ def export_scan(scan_id):
     return jsonify(response)
 
 # Initialize the database
-@app.before_first_request
-def create_tables():
+with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
