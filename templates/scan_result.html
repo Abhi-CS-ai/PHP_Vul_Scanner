@@ -7,29 +7,22 @@
     <div>
         <h1 class="text-3xl font-bold">Scan Results</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-1">
-            {% if scan.source_type == 'file' %}
-                <span class="flex items-center">
-                    <i class="fas fa-file-code mr-2 text-blue-500"></i>
-                    {{ scan.source }}
-                </span>
-            {% else %}
-                <span class="flex items-center">
-                    <i class="fas fa-globe mr-2 text-green-500"></i>
-                    {{ scan.source }}
-                </span>
-            {% endif %}
-            <span class="ml-4 text-sm">{{ scan.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+            <span class="flex items-center">
+                <i class="fas {{ 'fa-file-code text-blue-500' if scan.source_type == 'file' else 'fa-globe text-green-500' }} mr-2"></i>
+                {{ scan.source }}
+                <span class="ml-4 text-sm">{{ scan.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+            </span>
         </p>
     </div>
-    
-    <div class="mt-4 sm:mt-0 flex space-x-3">
-        <a href="{{ url_for('api/export', scan_id=scan.id) }}" target="_blank" 
+
+    <div class="mt-4 sm:mt-0 flex flex-wrap gap-3">
+        <a href="{{ url_for('export_scan', scan_id=scan.id) }}" target="_blank"
            class="flex items-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200">
             <i class="fas fa-download mr-2"></i>
             Export JSON
         </a>
-        <a href="{{ url_for('scan') }}" 
-           class="flex items-center py-2 px-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors duration-200">
+        <a href="{{ url_for('scan') }}"
+           class="flex items-center py-2 px-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md transition-colors duration-200">
             <i class="fas fa-plus mr-2"></i>
             New Scan
         </a>
@@ -48,7 +41,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div class="flex items-center">
             <div class="w-12 h-12 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center">
@@ -60,7 +53,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div class="flex items-center">
             <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center">
@@ -78,20 +71,20 @@
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-8">
     <div class="border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
         <h2 class="text-xl font-semibold">Vulnerabilities</h2>
-        <div class="flex space-x-2">
+        <div class="flex flex-wrap gap-2">
             <button class="filter-btn px-3 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" data-severity="all">All</button>
             <button class="filter-btn px-3 py-1 text-sm rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-800 transition-colors" data-severity="High">High</button>
             <button class="filter-btn px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-800 transition-colors" data-severity="Medium">Medium</button>
             <button class="filter-btn px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors" data-severity="Low">Low</button>
         </div>
     </div>
-    
+
     <div class="divide-y divide-gray-200 dark:divide-gray-700">
         {% for vuln in results.vulnerabilities %}
         <div class="vulnerability-item p-6" data-severity="{{ vuln.severity }}">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between">
                 <div>
-                    <div class="flex items-center">
+                    <div class="flex items-center mb-1">
                         {% if vuln.severity == 'High' %}
                         <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mr-2">High</span>
                         {% elif vuln.severity == 'Medium' %}
@@ -101,14 +94,14 @@
                         {% endif %}
                         <h3 class="text-lg font-semibold">{{ vuln.type }}</h3>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">Line {{ vuln.line_number }}</p>
+                    <p class="text-gray-600 dark:text-gray-400">Line {{ vuln.line_number or 'N/A' }}</p>
                 </div>
                 <button class="toggle-details mt-4 md:mt-0 px-3 py-1 text-sm border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-chevron-down details-icon"></i>
                     <span class="ml-1">Details</span>
                 </button>
             </div>
-            
+
             <div class="vulnerability-details mt-6 hidden">
                 <div class="mb-4">
                     <h4 class="text-sm font-medium mb-1">Code Snippet</h4>
@@ -116,7 +109,7 @@
                         <pre class="text-sm"><code>{{ vuln.code_snippet }}</code></pre>
                     </div>
                 </div>
-                
+
                 <div>
                     <h4 class="text-sm font-medium mb-1">Remediation</h4>
                     <p class="text-gray-600 dark:text-gray-400">{{ vuln.remediation }}</p>

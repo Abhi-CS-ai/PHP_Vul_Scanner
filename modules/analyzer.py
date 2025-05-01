@@ -4,6 +4,7 @@ import json
 import requests
 from modules.vulnerability_patterns import VULNERABILITY_PATTERNS
 
+
 def analyze_php_file(filepath):
     """
     Analyze a PHP file for vulnerabilities

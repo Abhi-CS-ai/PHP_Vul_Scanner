@@ -6,9 +6,21 @@
 <div class="mb-8">
     <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
 
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% else %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Action cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- New Scan -->
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex flex-col justify-between">
             <div class="flex items-center">
                 <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
                     <i class="fas fa-search text-xl"></i>
@@ -24,7 +36,7 @@
         </div>
 
         <!-- View History -->
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex flex-col justify-between">
             <div class="flex items-center">
                 <div class="w-12 h-12 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center">
                     <i class="fas fa-history text-xl"></i>
@@ -39,8 +51,8 @@
             </a>
         </div>
 
-        <!-- Help Button -->
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <!-- Help Modal Trigger -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex flex-col justify-between">
             <div class="flex items-center">
                 <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center">
                     <i class="fas fa-question-circle text-xl"></i>
@@ -50,13 +62,14 @@
                     <p class="text-gray-600 dark:text-gray-400">Learn about vulnerability types</p>
                 </div>
             </div>
-            <button class="mt-4 inline-block py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-md transition-colors duration-200" id="helpButton" aria-label="Open Help Modal">
+            <button id="helpButton" aria-label="Open Help Modal" class="mt-4 inline-block py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-md transition-colors duration-200">
                 View Help
             </button>
         </div>
     </div>
 </div>
 
+<!-- Recent Scans Table -->
 {% if recent_scans %}
 <div>
     <div class="flex items-center justify-between mb-4">
@@ -80,40 +93,25 @@
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-3 px-4">{{ scan.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td class="py-3 px-4">
-                            {% if scan.source_type == 'file' %}
                             <span class="flex items-center">
-                                <i class="fas fa-file-code mr-2 text-blue-500"></i>
+                                <i class="fas {{ 'fa-file-code text-blue-500' if scan.source_type == 'file' else 'fa-globe text-green-500' }} mr-2"></i>
                                 {{ scan.source }}
                             </span>
-                            {% else %}
-                            <span class="flex items-center">
-                                <i class="fas fa-globe mr-2 text-green-500"></i>
-                                {{ scan.source }}
-                            </span>
-                            {% endif %}
                         </td>
                         <td class="py-3 px-4">
-                            {% set results = scan.results|tojson|fromjson %}
-                            <div class="flex space-x-2">
+                            {% set results = scan.parsed_results %}
+                            <div class="flex flex-wrap gap-2">
                                 {% if results.summary.high_severity > 0 %}
-                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                    {{ results.summary.high_severity }} High
-                                </span>
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">{{ results.summary.high_severity }} High</span>
                                 {% endif %}
                                 {% if results.summary.medium_severity > 0 %}
-                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                    {{ results.summary.medium_severity }} Medium
-                                </span>
+                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">{{ results.summary.medium_severity }} Medium</span>
                                 {% endif %}
                                 {% if results.summary.low_severity > 0 %}
-                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                    {{ results.summary.low_severity }} Low
-                                </span>
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">{{ results.summary.low_severity }} Low</span>
                                 {% endif %}
                                 {% if results.summary.total_vulnerabilities == 0 %}
-                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    No vulnerabilities
-                                </span>
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">No vulnerabilities</span>
                                 {% endif %}
                             </div>
                         </td>
@@ -128,7 +126,8 @@
     </div>
 </div>
 {% else %}
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+<!-- No Scans Yet Block -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center mt-6">
     <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
         <i class="fas fa-search text-2xl"></i>
     </div>
@@ -157,7 +156,7 @@
                     <p class="font-mono text-sm">$query = "SELECT * FROM users WHERE username = '" . $_GET['username'] . "';";</p>
                 </div>
             </div>
-            
+
             <div>
                 <h4 class="text-lg font-semibold text-red-600 dark:text-red-400">Cross-Site Scripting (XSS)</h4>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">XSS attacks occur when an application includes untrusted data in a new web page without proper validation, allowing attackers to execute scripts in a victim's browser.</p>
@@ -166,8 +165,7 @@
                 </div>
             </div>
 
-            <!-- Other vulnerability types omitted for brevity -->
-
+            <!-- Add more types here -->
         </div>
     </div>
 </div>

@@ -111,8 +111,14 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    recent_scans = ScanResult.query.filter_by(user_id=current_user.id).order_by(ScanResult.timestamp.desc()).limit(5).all()
-    return render_template('dashboard.html', recent_scans=recent_scans)
+    scans = ScanResult.query.filter_by(user_id=current_user.id).order_by(ScanResult.timestamp.desc()).limit(5).all()
+
+    # Parse results JSON in Python before passing to the template
+    for scan in scans:
+        scan.parsed_results = json.loads(scan.results)
+
+    return render_template('dashboard.html', recent_scans=scans)
+
 
 @app.route('/scan', methods=['GET', 'POST'])
 @login_required
@@ -192,7 +198,20 @@ def scan_result(scan_id):
 @login_required
 def history():
     scans = ScanResult.query.filter_by(user_id=current_user.id).order_by(ScanResult.timestamp.desc()).all()
+    for scan in scans:
+        scan.parsed_results = json.loads(scan.results)
     return render_template('history.html', scans=scans)
+
+@app.route('/delete_scan/<scan_id>', methods=['POST'])
+@login_required
+def delete_scan(scan_id):
+    scan = ScanResult.query.filter_by(id=scan_id, user_id=current_user.id).first_or_404()
+    db.session.delete(scan)
+    db.session.commit()
+    flash('Scan deleted successfully.', 'success')
+    return redirect(url_for('history'))
+
+
 
 @app.route('/api/export/<scan_id>')
 @login_required
